@@ -4,6 +4,6 @@ GitHub User Activity Monitor Plugin modules
 
 from .github_api import GitHubAPI
 from .notification_renderer import NotificationRenderer
-from .message_sender import MessageSender
+from .yandere_templates import YandereTemplates
 
-__all__ = ['GitHubAPI', 'NotificationRenderer', 'MessageSender'] 
+__all__ = ['GitHubAPI', 'NotificationRenderer', 'YandereTemplates'] 

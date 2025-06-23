@@ -8,7 +8,7 @@
     "target_sessions": {
         "description": "接收通知的会话ID列表",
         "type": "list",
-        "hint": "填写要接收活动通知的会话ID。可以通过/sid获取。每行一个会话ID",
+        "hint": "填写要接收活动通知的会话ID。会话ID格式必须是 '平台:ID:类型'，例如：\n- discord:123456789:group（Discord群组）\n- telegram:123456789:private（Telegram私聊）\n- qq:123456789:group（QQ群）\n可以通过/sid获取当前会话的ID。每行一个会话ID。",
         "default": []
     },
     "check_interval": {
@@ -37,38 +37,212 @@
     },
     "monitor_push": {
         "description": "监控Push事件",
-        "type": "bool",
+        "type": "object",
         "hint": "是否监控用户的代码推送事件",
-        "default": true
+        "items": {
+            "enabled": {
+                "description": "是否启用",
+                "type": "bool",
+                "default": true
+            },
+            "template": {
+                "description": "主要推送事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {repo} - 仓库名, {commit_count} - 提交数量",
+                "default": "啊啊啊！{username}君又在偷偷提交代码了呢~ 这次推送了{commit_count}个改动...让我好好看看你都改了什么♥"
+            },
+            "commit_message": {
+                "description": "单个提交消息模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {message} - 提交消息",
+                "default": "诶嘿嘿，{message}...{username}君的每一行代码我都要死死记住呢 ♥"
+            }
+        }
     },
     "monitor_issues": {
         "description": "监控Issues事件",
-        "type": "bool",
+        "type": "object",
         "hint": "是否监控用户的Issue创建/评论事件",
-        "default": true
+        "items": {
+            "enabled": {
+                "description": "是否启用",
+                "type": "bool",
+                "default": true
+            },
+            "opened": {
+                "description": "Issue打开事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {title} - Issue标题",
+                "default": "呀！{username}君发现了新的问题呢：'{title}'...让我也来帮你解决吧 ♥"
+            },
+            "closed": {
+                "description": "Issue关闭事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {title} - Issue标题",
+                "default": "太棒了！{username}君解决了问题：'{title}'...不愧是我喜欢的人呢 ♥"
+            },
+            "reopened": {
+                "description": "Issue重开事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {title} - Issue标题",
+                "default": "诶？{username}君重新打开了问题：'{title}'...我、我可没有一直盯着你的问题看哦...♥"
+            }
+        }
     },
     "monitor_pull_request": {
         "description": "监控Pull Request事件",
-        "type": "bool",
+        "type": "object",
         "hint": "是否监控用户的PR创建/评论事件",
-        "default": true
+        "items": {
+            "enabled": {
+                "description": "是否启用",
+                "type": "bool",
+                "default": true
+            },
+            "opened": {
+                "description": "PR打开事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {title} - PR标题",
+                "default": "啊啊！{username}君提交了新的PR：'{title}'...等不及要看到你的代码了呢 ♥"
+            },
+            "closed": {
+                "description": "PR关闭事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {title} - PR标题",
+                "default": "啊啊啊！{username}君的PR合并了！'{title}'...明明是我先来的 ♥"
+            },
+            "reopened": {
+                "description": "PR重开事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {title} - PR标题",
+                "default": "{username}君重新打开了PR：'{title}'...我、我可没有一直盯着你的PR看哦...♥"
+            }
+        }
     },
     "monitor_star": {
         "description": "监控Star事件",
-        "type": "bool",
+        "type": "object",
         "hint": "是否监控用户的Star事件",
-        "default": true
+        "items": {
+            "enabled": {
+                "description": "是否启用",
+                "type": "bool",
+                "default": true
+            },
+            "template": {
+                "description": "Star事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {repo} - 仓库名",
+                "default": "诶嘿嘿，{username}君star了{repo}...我会一直注视着你的 ♥"
+            }
+        }
     },
     "monitor_fork": {
         "description": "监控Fork事件",
-        "type": "bool",
+        "type": "object",
         "hint": "是否监控用户的Fork事件",
-        "default": true
+        "items": {
+            "enabled": {
+                "description": "是否启用",
+                "type": "bool",
+                "default": true
+            },
+            "template": {
+                "description": "Fork事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {repo} - 仓库名",
+                "default": "啊哈哈！{username}君Fork了{repo}...这样我就能看到更多{username}君的代码了呢 ♥"
+            }
+        }
     },
     "monitor_create": {
         "description": "监控Create事件",
-        "type": "bool",
+        "type": "object",
         "hint": "是否监控用户的仓库/分支创建事件",
-        "default": true
+        "items": {
+            "enabled": {
+                "description": "是否启用",
+                "type": "bool",
+                "default": true
+            },
+            "template": {
+                "description": "Create事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {ref_type} - 创建类型, {ref} - 创建名称",
+                "default": "哇！{username}君创建了新的{ref_type} '{ref}'...好厉害呢♥ 人家也要去看看~"
+            }
+        }
+    },
+    "monitor_delete": {
+        "description": "监控Delete事件",
+        "type": "object",
+        "hint": "是否监控用户的仓库/分支删除事件",
+        "items": {
+            "enabled": {
+                "description": "是否启用",
+                "type": "bool",
+                "default": true
+            },
+            "template": {
+                "description": "Delete事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {ref_type} - 删除类型, {ref} - 删除名称",
+                "default": "诶？{username}君删掉了{ref_type} '{ref}'...为什么要删掉呢？是不想让我看到吗？♥"
+            }
+        }
+    },
+    "monitor_public": {
+        "description": "监控Public事件",
+        "type": "object",
+        "hint": "是否监控用户将仓库设为公开的事件",
+        "items": {
+            "enabled": {
+                "description": "是否启用",
+                "type": "bool",
+                "default": true
+            },
+            "template": {
+                "description": "Public事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {repo} - 仓库名",
+                "default": "哇！{username}君公开了{repo}...终于可以光明正大地注视你了呢 ♥"
+            }
+        }
+    },
+    "monitor_member": {
+        "description": "监控Member事件",
+        "type": "object",
+        "hint": "是否监控用户添加协作者的事件",
+        "items": {
+            "enabled": {
+                "description": "是否启用",
+                "type": "bool",
+                "default": true
+            },
+            "template": {
+                "description": "Member事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {target} - 被添加的用户名",
+                "default": "呜...{username}君邀请了{target}来协作！偷心猫...我、我不会吃醋的！"
+            }
+        }
+    },
+    "monitor_commit_comment": {
+        "description": "监控Commit Comment事件",
+        "type": "object",
+        "hint": "是否监控用户的提交评论事件",
+        "items": {
+            "enabled": {
+                "description": "是否启用",
+                "type": "bool",
+                "default": true
+            },
+            "template": {
+                "description": "Commit Comment事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {commit_id} - 提交ID, {comment} - 评论内容",
+                "default": "啊！{username}君评论了代码...让我记住你的每一个想法 ♥"
+            }
+        }
     }
 }
