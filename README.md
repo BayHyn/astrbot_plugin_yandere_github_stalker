@@ -12,13 +12,6 @@
 - 支持自定义病娇风格模板
 - 支持 GitHub API Token 以提高 API 访问限制
 
-## 安装
-
-1. 将插件目录复制到 AstrBot 的 plugins 目录下
-2. 安装依赖：
-   ```bash
-   pip install -r requirements.txt
-   ```
 
 ## 配置
 
@@ -117,6 +110,4 @@
 3. 会话ID格式必须为 `平台:ID:类型`，例如 `qq:123456:group`
 4. 自定义模板时请确保包含所有必要的变量占位符
 
-## License
 
-MIT License
