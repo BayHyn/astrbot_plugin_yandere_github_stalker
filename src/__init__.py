@@ -1,6 +1,4 @@
-"""
-GitHub User Activity Monitor Plugin modules
-"""
+"""Yandere Github Stalker Plugin modules"""
 
 from .github_api import GitHubAPI
 from .notification_renderer import NotificationRenderer

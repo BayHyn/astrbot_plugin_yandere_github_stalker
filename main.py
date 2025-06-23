@@ -1,5 +1,5 @@
 """
-GitHub User Activity Monitor Plugin
+Yandere Github Stalker Plugin
 """
 import asyncio
 import json
@@ -19,8 +19,8 @@ from .src.notification_renderer import NotificationRenderer
 from .src.yandere_templates import YandereTemplates
 
 
-@register("astrbot_plugin_yandere_github_stalker", "Simon", "GitHub用户活动监控插件 - 病娇版", "1.0.0")
-class GitHubActivityMonitor(Star):
+@register("astrbot_plugin_yandere_github_stalker", "SXP-Simon", "Yandere Github Stalker Plugin", "1.0.0")
+class YandereGithubStalker(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
         self.config = config
@@ -87,14 +87,14 @@ class GitHubActivityMonitor(Star):
             with open(self.pushed_event_ids_path, "w", encoding="utf-8") as f:
                 json.dump(list(self.pushed_event_ids), f)
         except Exception as e:
-            logger.error(f"GitHub活动监控: 保存事件ID失败: {e}")
+            logger.error(f"Yandere Github Stalker: 保存事件ID失败: {e}")
 
     async def start_monitoring(self):
         """启动监控任务"""
         try:
-            logger.info("GitHub活动监控: 病娇版监控启动...")
+            logger.info("Yandere Github Stalker: 病娇版监控启动...")
             if not self.config.get("github_token"):
-                logger.warning("GitHub活动监控: 未配置GitHub Token，可能会受到API访问限制")
+                logger.warning("Yandere Github Stalker: 未配置GitHub Token，可能会受到API访问限制")
 
             while True:
                 try:
@@ -103,10 +103,10 @@ class GitHubActivityMonitor(Star):
                     await self.check_activities()
                     await asyncio.sleep(check_interval)
                 except Exception as e:
-                    logger.error(f"GitHub活动监控: 监控任务出错: {e}")
+                    logger.error(f"Yandere Github Stalker: 监控任务出错: {e}")
                     await asyncio.sleep(60)  # 出错后等待1分钟再重试
         except Exception as e:
-            logger.error(f"GitHub活动监控: 启动监控任务失败: {e}")
+            logger.error(f"Yandere Github Stalker: 启动监控任务失败: {e}")
 
     def _validate_session(self, session: str) -> bool:
         """
@@ -117,12 +117,12 @@ class GitHubActivityMonitor(Star):
         try:
             parts = session.split(":")
             if len(parts) != 3:
-                logger.warning(f"GitHub活动监控: 不合法的会话ID格式: {session}，应为 '平台:ID:类型'")
+                logger.warning(f"Yandere Github Stalker: 不合法的会话ID格式: {session}，应为 '平台:ID:类型'")
                 return False
             platform, id_, type_ = parts
             return True
         except Exception as e:
-            logger.warning(f"GitHub活动监控: 会话ID格式验证失败: {session}, 错误: {e}")
+            logger.warning(f"Yandere Github Stalker: 会话ID格式验证失败: {session}, 错误: {e}")
             return False
 
     async def check_user_activity(self, username: str, events: list, target_sessions: list):
@@ -194,15 +194,15 @@ class GitHubActivityMonitor(Star):
                         message_chain
                     )
                 except Exception as e:
-                    logger.error(f"GitHub活动监控: 发送通知失败: {e}")
+                    logger.error(f"Yandere Github Stalker: 发送通知失败: {e}")
 
             # 清理临时图片文件
             if image_path and os.path.exists(image_path):
                 try:
                     os.remove(image_path)
-                    logger.debug(f"GitHub活动监控: 已清理临时图片文件: {image_path}")
+                    logger.debug(f"Yandere Github Stalker: 已清理临时图片文件: {image_path}")
                 except Exception as e:
-                    logger.warning(f"GitHub活动监控: 删除图片文件失败: {e}")
+                    logger.warning(f"Yandere Github Stalker: 删除图片文件失败: {e}")
 
             # 记录已推送事件ID
             for event in new_events:
@@ -212,12 +212,12 @@ class GitHubActivityMonitor(Star):
             self._save_pushed_event_ids()
 
         except Exception as e:
-            logger.error(f"GitHub活动监控: 处理事件失败: {e}")
+            logger.error(f"Yandere Github Stalker: 处理事件失败: {e}")
 
     async def check_activities(self):
         """检查GitHub活动"""
         if self.is_monitoring:
-            logger.debug("GitHub活动监控: 上一次检查还在进行中，跳过本次检查")
+            logger.debug("Yandere Github Stalker: 上一次检查还在进行中，跳过本次检查")
             return
 
         self.is_monitoring = True
@@ -226,17 +226,17 @@ class GitHubActivityMonitor(Star):
             target_sessions = self.config.get("target_sessions", [])
 
             if not monitored_users:
-                logger.debug("GitHub活动监控: 没有配置要监控的用户")
+                logger.debug("Yandere Github Stalker: 没有配置要监控的用户")
                 return
 
             if not target_sessions:
-                logger.debug("GitHub活动监控: 没有配置目标会话")
+                logger.debug("Yandere Github Stalker: 没有配置目标会话")
                 return
 
             # 验证所有会话ID的格式
             valid_sessions = [s for s in target_sessions if self._validate_session(s)]
             if not valid_sessions:
-                logger.warning("GitHub活动监控: 没有有效的目标会话ID")
+                logger.warning("Yandere Github Stalker: 没有有效的目标会话ID")
                 return
 
             for username in monitored_users:
@@ -247,7 +247,7 @@ class GitHubActivityMonitor(Star):
                         # 调用新方法处理
                         await self.check_user_activity(username, activities, valid_sessions)
                 except Exception as e:
-                    logger.error(f"GitHub活动监控: 检查用户 {username} 活动时出错: {e}")
+                    logger.error(f"Yandere Github Stalker: 检查用户 {username} 活动时出错: {e}")
         finally:
             self.is_monitoring = False
 
@@ -308,14 +308,14 @@ class GitHubActivityMonitor(Star):
                     # 直接使用image_result，它会自动处理URL和本地路径
                     return event.image_result(image_path)
             except Exception as e:
-                logger.error(f"GitHub活动监控: HTML渲染失败: {e}")
+                logger.error(f"Yandere Github Stalker: HTML渲染失败: {e}")
 
             # 如果没有成功生成图片消息，使用文本消息
             text = self.notification_renderer.create_text_notification(username, test_events)
             return event.plain_result(text)
 
         except Exception as e:
-            logger.error(f"GitHub活动监控: 测试通知失败: {e}")
+            logger.error(f"Yandere Github Stalker: 测试通知失败: {e}")
             return event.plain_result(f"❌ 测试失败: {e}")
 
     @filter.command("github_status")
@@ -326,7 +326,7 @@ class GitHubActivityMonitor(Star):
         check_interval = self.config.get("check_interval", 300)
         pushed_count = len(self.pushed_event_ids)
         msg = (
-            f"GitHub活动监控插件状态 ♥\n"
+            f"Yandere Github Stalker 插件状态 ♥\n"
             f"监控的用户们: {len(monitored_users)}位大可爱\n"
             f"推送目标: {len(target_sessions)}个频道\n"
             f"检查间隔: {check_interval}秒\n"
@@ -338,4 +338,4 @@ class GitHubActivityMonitor(Star):
         """插件卸载时调用"""
         if self.monitoring_task:
             self.monitoring_task.cancel()
-        logger.info("GitHub活动监控: 插件已停止...有缘再见呢 ♥")
+        logger.info("Yandere Github Stalker: 插件已停止...有缘再见呢 ♥")

@@ -10,7 +10,7 @@ class GitHubAPI:
     def __init__(self, token: str = ""):
         self.token = token.strip()
         self.headers = {
-            'User-Agent': 'AstrBot-GitHub-User-Stalker/1.0.0',
+            'User-Agent': 'Yandere-Github-Stalker/1.0.0',
             'Accept': 'application/vnd.github.v3+json'
         }
         if self.token:
@@ -26,13 +26,13 @@ class GitHubAPI:
                     if response.status == 200:
                         return await response.json()
                     elif response.status == 404:
-                        logger.warning(f"GitHub User Stalker: 用户 {username} 不存在")
+                        logger.warning(f"Yandere Github Stalker: 用户 {username} 不存在")
                         return None
                     else:
-                        logger.warning(f"GitHub User Stalker: GitHub API返回状态码 {response.status}")
+                        logger.warning(f"Yandere Github Stalker: GitHub API返回状态码 {response.status}")
                         return None
         except Exception as e:
-            logger.error(f"GitHub User Stalker: 获取用户 {username} 活动失败: {e}")
+            logger.error(f"Yandere Github Stalker: 获取用户 {username} 活动失败: {e}")
             return None
 
     async def get_user_info(self, username: str) -> Optional[dict]:
@@ -45,10 +45,10 @@ class GitHubAPI:
                     if response.status == 200:
                         return await response.json()
                     else:
-                        logger.warning(f"GitHub User Stalker: 获取用户信息失败，状态码: {response.status}")
+                        logger.warning(f"Yandere Github Stalker: 获取用户信息失败，状态码: {response.status}")
                         return None
         except Exception as e:
-            logger.error(f"GitHub User Stalker: 获取用户信息失败: {e}")
+            logger.error(f"Yandere Github Stalker: 获取用户信息失败: {e}")
             return None
 
     async def download_avatar_base64(self, avatar_url: str) -> Optional[str]:
@@ -61,5 +61,5 @@ class GitHubAPI:
                         import base64
                         return base64.b64encode(avatar_data).decode('utf-8')
         except Exception as e:
-            logger.error(f"GitHub User Stalker: 下载头像失败: {e}")
+            logger.error(f"Yandere Github Stalker: 下载头像失败: {e}")
         return None 

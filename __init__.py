@@ -1,7 +1,5 @@
-"""
-GitHub User Activity Monitor Plugin
-"""
+"""Yandere Github Stalker Plugin"""
 
-from .main import GitHubActivityMonitor
+from .main import YandereGithubStalker
 
-__all__ = ['GitHubActivityMonitor'] 
+__all__ = ['YandereGithubStalker'] 

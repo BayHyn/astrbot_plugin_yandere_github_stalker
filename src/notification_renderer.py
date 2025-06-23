@@ -149,7 +149,7 @@ class NotificationRenderer:
         </head>
         <body>
             <div class="container">
-                <div class="title">GitHub Activity Monitor ♥</div>
+                <div class="title">Yandere Github Stalker ♥</div>
                 <div class="user-info">
                     <img class="avatar" src="{{ avatar_base64 or default_avatar }}" alt="User Avatar">
                     <div class="username">{{ username }}君的动态 ♥</div>
