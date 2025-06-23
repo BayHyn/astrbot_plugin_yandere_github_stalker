@@ -1,0 +1,74 @@
+{
+    "monitored_users": {
+        "description": "要监控的GitHub用户列表",
+        "type": "list",
+        "hint": "要监控的GitHub用户名列表。每行一个用户名",
+        "default": []
+    },
+    "target_sessions": {
+        "description": "接收通知的会话ID列表",
+        "type": "list",
+        "hint": "填写要接收活动通知的会话ID。可以通过/sid获取。每行一个会话ID",
+        "default": []
+    },
+    "check_interval": {
+        "description": "检查间隔时间（秒）",
+        "type": "int",
+        "hint": "每隔多少秒检查一次用户活动。有Token时建议300秒，无Token时建议600秒以上",
+        "default": 300
+    },
+    "github_token": {
+        "description": "GitHub Personal Access Token",
+        "type": "string",
+        "hint": "用于访问GitHub API，建议使用精细令牌(Fine-grained token)，只需要读取权限",
+        "default": "",
+        "obvious_hint": true
+    },
+    "enable_startup_notification": {
+        "description": "是否在插件启动时发送通知",
+        "type": "bool",
+        "default": true
+    },
+    "enable_image_notification": {
+        "description": "启用图片通知",
+        "type": "bool",
+        "hint": "是否使用图片形式发送通知（包含用户头像等详细信息）",
+        "default": true
+    },
+    "monitor_push": {
+        "description": "监控Push事件",
+        "type": "bool",
+        "hint": "是否监控用户的代码推送事件",
+        "default": true
+    },
+    "monitor_issues": {
+        "description": "监控Issues事件",
+        "type": "bool",
+        "hint": "是否监控用户的Issue创建/评论事件",
+        "default": true
+    },
+    "monitor_pull_request": {
+        "description": "监控Pull Request事件",
+        "type": "bool",
+        "hint": "是否监控用户的PR创建/评论事件",
+        "default": true
+    },
+    "monitor_star": {
+        "description": "监控Star事件",
+        "type": "bool",
+        "hint": "是否监控用户的Star事件",
+        "default": true
+    },
+    "monitor_fork": {
+        "description": "监控Fork事件",
+        "type": "bool",
+        "hint": "是否监控用户的Fork事件",
+        "default": true
+    },
+    "monitor_create": {
+        "description": "监控Create事件",
+        "type": "bool",
+        "hint": "是否监控用户的仓库/分支创建事件",
+        "default": true
+    }
+}
