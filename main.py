@@ -48,7 +48,7 @@ class YandereGithubStalker(Star):
             "data", "github_pushed_event_ids.json")
         self.pushed_event_ids = self._load_pushed_event_ids()
 
-        # 启动监控任务
+        # 启动视奸任务
         asyncio.create_task(self.start_monitoring())
 
     @filter.command_group("yandere")
@@ -72,8 +72,8 @@ class YandereGithubStalker(Star):
             with open(test_data_path, "r", encoding="utf-8") as f:
                 test_events = json.load(f)
 
-            # 只使用最新的5条动态
-            test_events = sorted(test_events, key=lambda x: x.get("created_at", ""), reverse=True)[:5]
+            # 只使用最新的3条动态
+            test_events = sorted(test_events, key=lambda x: x.get("created_at", ""), reverse=True)[:3]
 
             # 获取第一个事件的用户信息用于渲染
             first_event = test_events[0]
@@ -126,7 +126,7 @@ class YandereGithubStalker(Star):
 
     @yandere_group.command("status")
     async def github_status(self, event: AstrMessageEvent):
-        """显示当前监控状态"""
+        """显示当前视奸状态"""
         # 阻止事件继续传播并禁止LLM处理
         event.stop_event()
         event.should_call_llm(False)
@@ -137,7 +137,7 @@ class YandereGithubStalker(Star):
         pushed_count = len(self.pushed_event_ids)
         msg = (
             f"Yandere Github Stalker 插件状态 ♥\n"
-            f"监控的用户们: {len(monitored_users)}位大可爱\n"
+            f"视奸的用户们: {len(monitored_users)}位大可爱\n"
             f"推送目标: {len(target_sessions)}个频道\n"
             f"检查间隔: {check_interval}秒\n"
             f"已经记录了{pushed_count}条动态呢...诶嘿嘿 ♥"
@@ -146,7 +146,7 @@ class YandereGithubStalker(Star):
 
     @yandere_group.command("add")
     async def add_user(self, event: AstrMessageEvent, username: str):
-        """添加一个GitHub用户到监控列表"""
+        """添加一个GitHub用户到视奸列表"""
         # 阻止事件继续传播并禁止LLM处理
         event.stop_event()
         event.should_call_llm(False)
@@ -154,7 +154,7 @@ class YandereGithubStalker(Star):
         try:
             monitored_users = self.config.get("monitored_users", [])
             if username in monitored_users:
-                return event.plain_result(f"❌ 用户 {username} 已经在监控列表中了哦~").stop_event()
+                return event.plain_result(f"❌ 用户 {username} 已经在视奸列表中了哦~").stop_event()
             
             # 验证用户是否存在
             try:
@@ -166,14 +166,14 @@ class YandereGithubStalker(Star):
 
             monitored_users.append(username)
             self.config.update({"monitored_users": monitored_users})
-            return event.plain_result(f"✅ 已将用户 {username} 加入监控列表~").stop_event()
+            return event.plain_result(f"✅ 已将用户 {username} 加入视奸列表~").stop_event()
         except Exception as e:
             logger.error(f"Yandere Github Stalker: 添加用户失败: {e}")
             return event.plain_result(f"❌ 添加用户失败: {e}").stop_event()
 
     @yandere_group.command("remove")
     async def remove_user(self, event: AstrMessageEvent, username: str):
-        """从监控列表中移除一个GitHub用户"""
+        """从视奸列表中移除一个GitHub用户"""
         # 阻止事件继续传播并禁止LLM处理
         event.stop_event()
         event.should_call_llm(False)
@@ -181,11 +181,11 @@ class YandereGithubStalker(Star):
         try:
             monitored_users = self.config.get("monitored_users", [])
             if username not in monitored_users:
-                return event.plain_result(f"❌ 用户 {username} 不在监控列表中哦~").stop_event()
+                return event.plain_result(f"❌ 用户 {username} 不在视奸列表中哦~").stop_event()
             
             monitored_users.remove(username)
             self.config.update({"monitored_users": monitored_users})
-            return event.plain_result(f"✅ 已将用户 {username} 从监控列表中移除~").stop_event()
+            return event.plain_result(f"✅ 已将用户 {username} 从视奸列表中移除~").stop_event()
         except Exception as e:
             logger.error(f"Yandere Github Stalker: 移除用户失败: {e}")
             return event.plain_result(f"❌ 移除用户失败: {e}").stop_event()
@@ -275,9 +275,9 @@ class YandereGithubStalker(Star):
             logger.error(f"Yandere Github Stalker: 保存事件ID失败: {e}")
 
     async def start_monitoring(self):
-        """启动监控任务"""
+        """启动视奸任务"""
         try:
-            logger.info("Yandere Github Stalker: 病娇版监控启动...")
+            logger.info("Yandere Github Stalker: 病娇版视奸启动...")
             if not self.config.get("github_token"):
                 logger.warning("Yandere Github Stalker: 未配置GitHub Token，可能会受到API访问限制")
 
@@ -288,10 +288,10 @@ class YandereGithubStalker(Star):
                     await self.check_activities()
                     await asyncio.sleep(check_interval)
                 except Exception as e:
-                    logger.error(f"Yandere Github Stalker: 监控任务出错: {e}")
+                    logger.error(f"Yandere Github Stalker: 视奸任务出错: {e}")
                     await asyncio.sleep(60)  # 出错后等待1分钟再重试
         except Exception as e:
-            logger.error(f"Yandere Github Stalker: 启动监控任务失败: {e}")
+            logger.error(f"Yandere Github Stalker: 启动视奸任务失败: {e}")
 
     def _validate_session(self, session: str) -> bool:
         """
@@ -321,8 +321,8 @@ class YandereGithubStalker(Star):
         if not new_events:
             return
 
-        # 只处理最新的5条动态
-        new_events = sorted(new_events, key=lambda x: x.get("created_at", ""), reverse=True)[:5]
+        # 只处理最新的3条动态
+        new_events = sorted(new_events, key=lambda x: x.get("created_at", ""), reverse=True)[:3]
 
         try:
             # 获取用户头像
@@ -411,7 +411,7 @@ class YandereGithubStalker(Star):
             target_sessions = self.config.get("target_sessions", [])
 
             if not monitored_users:
-                logger.debug("Yandere Github Stalker: 没有配置要监控的用户")
+                logger.debug("Yandere Github Stalker: 没有配置要视奸的用户")
                 return
 
             if not target_sessions:
