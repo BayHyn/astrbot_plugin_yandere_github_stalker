@@ -4,16 +4,16 @@
     "type": "PushEvent",
     "actor": {
       "id": 12345678,
-      "login": "Hakimyu",
-      "display_login": "Hakimyu",
+      "login": "Soulter",
+      "display_login": "Soulter",
       "gravatar_id": "",
-      "url": "https://api.github.com/users/Hakimyu",
+      "url": "https://api.github.com/users/Soulter",
       "avatar_url": "https://avatars.githubusercontent.com/u/12345678?"
     },
     "repo": {
       "id": 987654321,
-      "name": "Hakimyu/AstrBot",
-      "url": "https://api.github.com/repos/Hakimyu/AstrBot"
+      "name": "Soulter/AstrBot",
+      "url": "https://api.github.com/repos/Soulter/AstrBot"
     },
     "payload": {
       "push_id": 12345678,
@@ -26,80 +26,26 @@
         {
           "sha": "abcdef1234567890",
           "author": {
-            "email": "hakimyu@example.com",
-            "name": "Hakimyu"
+            "email": "Soulter@example.com",
+            "name": "Soulter"
           },
           "message": "feat: 添加新功能",
           "distinct": true,
-          "url": "https://api.github.com/repos/Hakimyu/AstrBot/commits/abcdef1234567890"
+          "url": "https://api.github.com/repos/Soulter/AstrBot/commits/abcdef1234567890"
         },
         {
           "sha": "0987654321abcdef",
           "author": {
-            "email": "hakimyu@example.com",
-            "name": "Hakimyu"
+            "email": "Soulter@example.com",
+            "name": "Soulter"
           },
           "message": "fix: 修复bug",
           "distinct": true,
-          "url": "https://api.github.com/repos/Hakimyu/AstrBot/commits/0987654321abcdef"
+          "url": "https://api.github.com/repos/Soulter/AstrBot/commits/0987654321abcdef"
         }
       ]
     },
     "public": true,
     "created_at": "2024-01-01T12:00:00Z"
-  },
-  {
-    "id": "33787654322",
-    "type": "IssuesEvent",
-    "actor": {
-      "id": 12345678,
-      "login": "Hakimyu",
-      "display_login": "Hakimyu",
-      "gravatar_id": "",
-      "url": "https://api.github.com/users/Hakimyu",
-      "avatar_url": "https://avatars.githubusercontent.com/u/12345678?"
-    },
-    "repo": {
-      "id": 987654321,
-      "name": "Hakimyu/AstrBot",
-      "url": "https://api.github.com/repos/Hakimyu/AstrBot"
-    },
-    "payload": {
-      "action": "opened",
-      "issue": {
-        "url": "https://api.github.com/repos/Hakimyu/AstrBot/issues/123",
-        "number": 123,
-        "title": "优化用户体验",
-        "user": {
-          "login": "Hakimyu"
-        },
-        "state": "open",
-        "body": "需要优化用户交互界面"
-      }
-    },
-    "public": true,
-    "created_at": "2024-01-01T13:00:00Z"
-  },
-  {
-    "id": "33787654323",
-    "type": "WatchEvent",
-    "actor": {
-      "id": 12345678,
-      "login": "Hakimyu",
-      "display_login": "Hakimyu",
-      "gravatar_id": "",
-      "url": "https://api.github.com/users/Hakimyu",
-      "avatar_url": "https://avatars.githubusercontent.com/u/12345678?"
-    },
-    "repo": {
-      "id": 987654322,
-      "name": "microsoft/vscode",
-      "url": "https://api.github.com/repos/microsoft/vscode"
-    },
-    "payload": {
-      "action": "started"
-    },
-    "public": true,
-    "created_at": "2024-01-01T14:00:00Z"
   }
 ] 

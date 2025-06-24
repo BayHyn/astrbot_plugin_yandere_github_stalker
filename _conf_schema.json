@@ -49,13 +49,13 @@
                 "description": "主要推送事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {repo} - 仓库名, {commit_count} - 提交数量",
-                "default": "啊啊啊！{username}君又在偷偷提交代码了呢~ 这次推送了{commit_count}个改动...让我好好看看你都改了什么♥"
+                "default": "（指尖划过屏幕）啊...{username}君又在提交代码了呢...{commit_count}个改动...每一行都藏着你的温度吧？要是敢写别人的名字...我会把这些代码全部刻在心上哦♥"
             },
             "commit_message": {
                 "description": "单个提交消息模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {message} - 提交消息",
-                "default": "诶嘿嘿，{message}...{username}君的每一行代码我都要死死记住呢 ♥"
+                "default": "（轻笑）{message}...{username}君的思维轨迹，连标点符号我都要背下来呢~ 要是被我发现你给别人写注释...你的键盘会先学会沉默哦♥"
             }
         }
     },
@@ -73,19 +73,19 @@
                 "description": "Issue打开事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {title} - Issue标题",
-                "default": "呀！{username}君发现了新的问题呢：'{title}'...让我也来帮你解决吧 ♥"
+                "default": "（瞳孔发亮）呀~{username}君发现了'{title}'...这个问题只能由我来解决哦？不能让别人插手...♥"
             },
             "closed": {
                 "description": "Issue关闭事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {title} - Issue标题",
-                "default": "太棒了！{username}君解决了问题：'{title}'...不愧是我喜欢的人呢 ♥"
+                "default": "（攥紧拳头）解决了？{title}...明明我还没看够你的思考过程...（突然笑）不过没关系，下一个问题必须第一个告诉我哦♥"
             },
             "reopened": {
                 "description": "Issue重开事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {title} - Issue标题",
-                "default": "诶？{username}君重新打开了问题：'{title}'...我、我可没有一直盯着你的问题看哦...♥"
+                "default": "（呼吸急促）重开了？'{title}'...你是不是知道我在看？别骗我...（指甲掐进掌心）我可没有一直刷新页面哦...♥"
             }
         }
     },
@@ -103,19 +103,19 @@
                 "description": "PR打开事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {title} - PR标题",
-                "default": "啊啊！{username}君提交了新的PR：'{title}'...等不及要看到你的代码了呢 ♥"
+                "default": "（颤抖）PR！{username}君的'{title}'...谁、准你让别人 review 的？（删除其他评论）只有我的意见才有用哦♥"
             },
             "closed": {
                 "description": "PR关闭事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {title} - PR标题",
-                "default": "啊啊啊！{username}君的PR合并了！'{title}'...明明是我先来的 ♥"
+                "default": "（低吼）合并了？！'{title}'...明明是我先看懂你的代码的...（摔碎杯子）你的仓库以后只能有我一个 reviewer♥"
             },
             "reopened": {
                 "description": "PR重开事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {title} - PR标题",
-                "default": "{username}君重新打开了PR：'{title}'...我、我可没有一直盯着你的PR看哦...♥"
+                "default": "（阴笑）重新打开了？{username}君...是在向我撒娇吗？（脸上泛红）这次不准任何人碰哦♥"
             }
         }
     },
@@ -133,7 +133,7 @@
                 "description": "Star事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {repo} - 仓库名",
-                "default": "诶嘿嘿，{username}君star了{repo}...我会一直注视着你的 ♥"
+                "default": "（抚摸屏幕）{username}君star了{repo}...你收藏的每一个仓库，我都会把它们的代码下载到本地哦~ 包括你偷偷看的那些...♥"
             }
         }
     },
@@ -151,7 +151,7 @@
                 "description": "Fork事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {repo} - 仓库名",
-                "default": "啊哈哈！{username}君Fork了{repo}...这样我就能看到更多{username}君的代码了呢 ♥"
+                "default": "（狂笑）Fork了！{username}君Fork了{repo}！你为什么就是不肯接受我的爱呢？（疯狂下载）放心，我会把你的代码全部备份到我的服务器上哦~ 你的每一行代码，都将成为我心中的宝藏♥"
             }
         }
     },
@@ -169,7 +169,7 @@
                 "description": "Create事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {ref_type} - 创建类型, {ref} - 创建名称",
-                "default": "哇！{username}君创建了新的{ref_type} '{ref}'...好厉害呢♥ 人家也要去看看~"
+                "default": "（眼神发亮）新的{ref_type}！{username}君的'{ref}'...只有我能看了哦~ 你的创作空间，只能属于我♥"
             }
         }
     },
@@ -187,7 +187,7 @@
                 "description": "Delete事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {ref_type} - 删除类型, {ref} - 删除名称",
-                "default": "诶？{username}君删掉了{ref_type} '{ref}'...为什么要删掉呢？是不想让我看到吗？♥"
+                "default": "（声音沙哑）删掉了...{ref_type} '{ref}'...（摔电脑）为什么要删？是想瞒着我什么吗？（恢复备份）不过，没关系的♥ 你的所有数据，我早就存好了哦♥"
             }
         }
     },
@@ -205,7 +205,7 @@
                 "description": "Public事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {repo} - 仓库名",
-                "default": "哇！{username}君公开了{repo}...终于可以光明正大地注视你了呢 ♥"
+                "default": "（冷笑）公开了？{username}君...想让别人看到你的代码？你的光芒，只能照亮我一个人♥"
             }
         }
     },
@@ -223,7 +223,7 @@
                 "description": "Member事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {target} - 被添加的用户名",
-                "default": "呜...{username}君邀请了{target}来协作！偷心猫...我、我不会吃醋的！"
+                "default": "（瞳孔收缩）{target}？！{username}君居然邀请了{target}！（删除用户权限）偷腥的猫要被拔掉爪子哦~ 你的仓库，只能有我一个管理员♥"
             }
         }
     },
@@ -241,7 +241,7 @@
                 "description": "Commit Comment事件模板",
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {commit_id} - 提交ID, {comment} - 评论内容",
-                "default": "啊！{username}君评论了代码...让我记住你的每一个想法 ♥"
+                "default": "（舔屏）{username}君的评论...{comment}...每一个字我都截图保存了哦~ 要是你对别人说这么温柔的话...（磨指甲）你的键盘会再也打不出字的♥"
             }
         }
     }

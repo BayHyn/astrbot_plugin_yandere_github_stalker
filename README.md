@@ -7,7 +7,7 @@
 - 实时监控多个 GitHub 用户的活动
 - 病娇风格的活动通知
 - 支持多种活动类型的识别和展示
-- 提供精美的图片通知和简洁的文本通知
+- 提供《精美的图片》通知和简洁的文本通知
 - 可配置的检查间隔和通知方式
 - 支持自定义病娇风格模板
 - 支持 GitHub API Token 以提高 API 访问限制
@@ -15,7 +15,7 @@
 
 ## 配置
 
-在 AstrBot 的配置文件中添加以下配置：
+在 AstrBot 的配置文件中添加以下配置（示例）：
 
 ```json
 {
@@ -83,25 +83,30 @@
 
 ## 可用命令
 
-- `github_status`: 查看当前监控的用户状态
-- `github_test`: 测试通知功能
+- **`yandere test`**: 测试 GitHub 活动通知图片生成。(以 test_data.json 为示例数据)
+- **`yandere status`**: 显示当前监控状态。
+- **`yandere add <username>`**: 添加一个 GitHub 用户到监控列表。
+- **`yandere remove <username>`**: 从监控列表中移除一个 GitHub 用户。
+- **`yandere enable`**: 启用当前会话的通知（需要管理员权限）。
+- **`yandere disable`**: 禁用当前会话的通知（需要管理员权限）。
 
 ## 通知示例
 
 ### 文本通知
 ```
-啊啊啊！Hakimyu君又有新的动态了呢！♥
+啊啊啊！Soulter君又有新的动态了呢！♥
 
-诶嘿嘿，Hakimyu君Fork了owner/repo...这样我就能看到更多Hakimyu君的代码了呢 ♥
+诶嘿嘿，Soulter君Fork了owner/repo...这样我就能看到更多Soulter君的代码了呢 ♥
 
-还有更多动态...Hakimyu君真是太活跃了呢 ♥
+还有更多动态...Soulter君真是太活跃了呢 ♥
 ```
 
 ### 图片通知
-- 精美的粉色主题图片通知
+- 病娇主题图片通知
 - 包含用户头像和详细活动信息
-- 病娇风格的文字描述
-- 可爱的动画效果
+- 病娇风格的文字描述（可自定义模板）
+- 示例：
+![Soulter 动态](./demo.jpg)
 
 ## 注意事项
 
@@ -110,4 +115,26 @@
 3. 会话ID格式必须为 `平台:ID:类型`，例如 `qq:123456:group`
 4. 自定义模板时请确保包含所有必要的变量占位符
 
+## 文件结构
+
+项目的主要文件和目录结构如下：
+
+```
+├── src/
+│   ├── github_api.py                # GitHub API 交互逻辑
+│   ├── notification_renderer.py     # 通知渲染逻辑
+│   ├── yandere_templates.py         # 病娇风格模板
+│   └── templates/
+│       └── notification.html        # HTML 通知模板
+├── main.py                          # 插件主入口
+├── requirements.txt                 # 项目依赖
+├── README.md                        # 项目说明文档
+├── metadata.yaml                    # 插件元数据
+└── test_data.json                   # 测试数据
+```
+
+
+## 贡献 PR
+
+欢迎为本项目贡献代码！
 
