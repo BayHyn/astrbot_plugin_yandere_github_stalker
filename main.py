@@ -276,6 +276,16 @@ class YandereGithubStalker(Star):
 
     async def start_monitoring(self):
         """启动视奸任务"""
+        # 取消现有的监控任务（如果存在）
+        if self.monitoring_task and not self.monitoring_task.done():
+            self.monitoring_task.cancel()
+        
+        # 等待一小段时间，以确保所有内容都已初始化
+        await asyncio.sleep(5)
+        self.monitoring_task = asyncio.create_task(self._monitoring_loop())
+
+    async def _monitoring_loop(self):
+        """监控循环"""
         try:
             logger.info("Yandere Github Stalker: 病娇版视奸启动...")
             if not self.config.get("github_token"):
@@ -290,8 +300,10 @@ class YandereGithubStalker(Star):
                 except Exception as e:
                     logger.error(f"Yandere Github Stalker: 视奸任务出错: {e}")
                     await asyncio.sleep(60)  # 出错后等待1分钟再重试
+        except asyncio.CancelledError:
+            logger.info("Yandere Github Stalker: 视奸任务被取消。")
         except Exception as e:
-            logger.error(f"Yandere Github Stalker: 启动视奸任务失败: {e}")
+            logger.error(f"Yandere Github Stalker: 监控循环失败: {e}")
 
     def _validate_session(self, session: str) -> bool:
         """
@@ -438,6 +450,6 @@ class YandereGithubStalker(Star):
 
     async def terminate(self):
         """插件卸载时调用"""
-        if self.monitoring_task:
+        if self.monitoring_task and not self.monitoring_task.done():
             self.monitoring_task.cancel()
         logger.info("Yandere Github Stalker: 插件已停止...有缘再见呢 ♥")
