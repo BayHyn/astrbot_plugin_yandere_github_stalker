@@ -29,14 +29,15 @@ class YandereGithubStalker(Star):
 
         # 初始化组件
         self.github_api = GitHubAPI(config.get("github_token", ""))
-        
+
         # 获取自定义模板
         custom_templates = {}
         for key, value in config.items():
             if key.startswith('monitor_') and isinstance(value, dict):
                 event_type = self._convert_monitor_to_event_type(key)
                 if 'enabled' in value and value['enabled']:
-                    custom_templates[event_type] = {k: v for k, v in value.items() if k != 'enabled'}
+                    custom_templates[event_type] = {
+                        k: v for k, v in value.items() if k != 'enabled'}
 
         self.notification_renderer = NotificationRenderer(custom_templates)
 
@@ -56,7 +57,7 @@ class YandereGithubStalker(Star):
         """
         # 移除 "monitor_" 前缀
         event_type = monitor_key[8:]
-        
+
         # 特殊情况处理
         event_type_mapping = {
             'push': 'PushEvent',
@@ -70,7 +71,7 @@ class YandereGithubStalker(Star):
             'member': 'MemberEvent',
             'commit_comment': 'CommitCommentEvent'
         }
-        
+
         return event_type_mapping.get(event_type, event_type.capitalize() + 'Event')
 
     def _load_pushed_event_ids(self):
@@ -94,7 +95,8 @@ class YandereGithubStalker(Star):
         try:
             logger.info("Yandere Github Stalker: 病娇版监控启动...")
             if not self.config.get("github_token"):
-                logger.warning("Yandere Github Stalker: 未配置GitHub Token，可能会受到API访问限制")
+                logger.warning(
+                    "Yandere Github Stalker: 未配置GitHub Token，可能会受到API访问限制")
 
             while True:
                 try:
@@ -117,12 +119,14 @@ class YandereGithubStalker(Star):
         try:
             parts = session.split(":")
             if len(parts) != 3:
-                logger.warning(f"Yandere Github Stalker: 不合法的会话ID格式: {session}，应为 '平台:ID:类型'")
+                logger.warning(
+                    f"Yandere Github Stalker: 不合法的会话ID格式: {session}，应为 '平台:ID:类型'")
                 return False
             platform, id_, type_ = parts
             return True
         except Exception as e:
-            logger.warning(f"Yandere Github Stalker: 会话ID格式验证失败: {session}, 错误: {e}")
+            logger.warning(
+                f"Yandere Github Stalker: 会话ID格式验证失败: {session}, 错误: {e}")
             return False
 
     async def check_user_activity(self, username: str, events: list, target_sessions: list):
@@ -132,12 +136,14 @@ class YandereGithubStalker(Star):
         :param events: 事件列表
         :param target_sessions: 推送目标会话
         """
-        new_events = [e for e in events if e.get("id") not in self.pushed_event_ids]
+        new_events = [e for e in events if e.get(
+            "id") not in self.pushed_event_ids]
         if not new_events:
             return
 
         # 只处理最新的5条动态
-        new_events = sorted(new_events, key=lambda x: x.get("created_at", ""), reverse=True)[:5]
+        new_events = sorted(new_events, key=lambda x: x.get(
+            "created_at", ""), reverse=True)[:5]
 
         try:
             # 获取用户头像
@@ -166,11 +172,7 @@ class YandereGithubStalker(Star):
                 # 使用html_render渲染模板
                 image_path = await self.html_render(
                     tmpl=html_content,
-                    data={
-                        "username": username,
-                        "avatar_base64": avatar_base64,
-                        "events": new_events
-                    },
+                    data={},
                     return_url=False  # 返回文件路径而不是URL
                 )
                 if image_path:
@@ -180,7 +182,8 @@ class YandereGithubStalker(Star):
 
             # 如果没有成功生成图片消息，使用文本消息
             if not message_chain:
-                text = self.notification_renderer.create_text_notification(username, new_events)
+                text = self.notification_renderer.create_text_notification(
+                    username, new_events)
                 message_chain = MessageChain([Plain(text)])
 
             # 发送消息到所有目标会话
@@ -200,7 +203,8 @@ class YandereGithubStalker(Star):
             if image_path and os.path.exists(image_path):
                 try:
                     os.remove(image_path)
-                    logger.debug(f"Yandere Github Stalker: 已清理临时图片文件: {image_path}")
+                    logger.debug(
+                        f"Yandere Github Stalker: 已清理临时图片文件: {image_path}")
                 except Exception as e:
                     logger.warning(f"Yandere Github Stalker: 删除图片文件失败: {e}")
 
@@ -234,7 +238,8 @@ class YandereGithubStalker(Star):
                 return
 
             # 验证所有会话ID的格式
-            valid_sessions = [s for s in target_sessions if self._validate_session(s)]
+            valid_sessions = [
+                s for s in target_sessions if self._validate_session(s)]
             if not valid_sessions:
                 logger.warning("Yandere Github Stalker: 没有有效的目标会话ID")
                 return
@@ -247,7 +252,8 @@ class YandereGithubStalker(Star):
                         # 调用新方法处理
                         await self.check_user_activity(username, activities, valid_sessions)
                 except Exception as e:
-                    logger.error(f"Yandere Github Stalker: 检查用户 {username} 活动时出错: {e}")
+                    logger.error(
+                        f"Yandere Github Stalker: 检查用户 {username} 活动时出错: {e}")
         finally:
             self.is_monitoring = False
 
@@ -257,9 +263,10 @@ class YandereGithubStalker(Star):
         try:
             # 阻止事件继续传播
             event.stop_event()
-            
+
             # 读取测试数据
-            test_data_path = os.path.join(os.path.dirname(__file__), "test_data.json")
+            test_data_path = os.path.join(
+                os.path.dirname(__file__), "test_data.json")
             if not os.path.exists(test_data_path):
                 return event.plain_result("❌ 测试数据文件不存在")
 
@@ -267,7 +274,8 @@ class YandereGithubStalker(Star):
                 test_events = json.load(f)
 
             # 只使用最新的5条动态
-            test_events = sorted(test_events, key=lambda x: x.get("created_at", ""), reverse=True)[:5]
+            test_events = sorted(test_events, key=lambda x: x.get(
+                "created_at", ""), reverse=True)[:5]
 
             # 获取第一个事件的用户信息用于渲染
             first_event = test_events[0]
@@ -296,11 +304,7 @@ class YandereGithubStalker(Star):
                 # 直接使用html_render渲染HTML内容
                 image_path = await self.html_render(
                     tmpl=html_content,
-                    data={
-                        "username": username,
-                        "avatar_base64": avatar_base64,
-                        "events": test_events
-                    },
+                    data={},
                     return_url=False
                 )
 
@@ -311,7 +315,8 @@ class YandereGithubStalker(Star):
                 logger.error(f"Yandere Github Stalker: HTML渲染失败: {e}")
 
             # 如果没有成功生成图片消息，使用文本消息
-            text = self.notification_renderer.create_text_notification(username, test_events)
+            text = self.notification_renderer.create_text_notification(
+                username, test_events)
             return event.plain_result(text)
 
         except Exception as e:

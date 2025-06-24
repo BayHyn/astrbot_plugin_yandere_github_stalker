@@ -5,7 +5,6 @@ import json
 import os
 from typing import Dict, Any, Optional
 from dataclasses import dataclass
-from datetime import datetime
 
 @dataclass
 class GitHubEventData:
