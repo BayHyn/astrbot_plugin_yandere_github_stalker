@@ -1,35 +1,60 @@
 """
 GitHub API related functionality
 """
+import os
+import json
 import aiohttp
 from typing import Optional, List, Dict
 from datetime import datetime
 from astrbot.api import logger
+from .config_manager import ConfigManager
 
 class GitHubAPI:
-    def __init__(self, token: str = ""):
-        self.token = token.strip()
+    def __init__(self, config_manager: ConfigManager):
+        self.config_manager = config_manager
+        self.token = self.config_manager.get_github_token().strip()
+        
+        # 从schema加载配置
+        schema_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '_conf_schema.json')
+        try:
+            with open(schema_path, 'r', encoding='utf-8') as f:
+                schema = json.load(f)
+            self.timeout = schema.get('github_api_timeout', {}).get('default', 10)
+            self.user_agent = schema.get('github_api_user_agent', {}).get('default', 'Yandere-Github-Stalker/1.0.0')
+        except Exception:
+            self.timeout = 10
+            self.user_agent = 'Yandere-Github-Stalker/1.0.0'
+
         self.headers = {
-            'User-Agent': 'Yandere-Github-Stalker/1.0.0',
+            'User-Agent': self.user_agent,
             'Accept': 'application/vnd.github.v3+json'
         }
         if self.token:
             self.headers['Authorization'] = f'Bearer {self.token}'
+            logger.debug("Yandere Github Stalker: GitHub API已配置Token")
+        else:
+            logger.warning("Yandere Github Stalker: 未配置GitHub Token，API访问可能受限")
 
     async def get_user_events(self, username: str) -> Optional[List[dict]]:
         """获取用户的GitHub活动"""
         try:
             url = f"https://api.github.com/users/{username}/events"
+            logger.debug(f"Yandere Github Stalker: 正在获取用户 {username} 的活动，URL: {url}")
             
             async with aiohttp.ClientSession() as session:
-                async with session.get(url, headers=self.headers, timeout=aiohttp.ClientTimeout(total=10)) as response:
+                async with session.get(url, headers=self.headers, timeout=aiohttp.ClientTimeout(total=self.timeout)) as response:
                     if response.status == 200:
-                        return await response.json()
+                        events = await response.json()
+                        logger.debug(f"Yandere Github Stalker: 成功获取用户 {username} 的活动，共 {len(events)} 条")
+                        if events:
+                            logger.debug(f"Yandere Github Stalker: 最新5条事件类型：{[e.get('type') for e in events[:5]]}")
+                        return events
                     elif response.status == 404:
                         logger.warning(f"Yandere Github Stalker: 用户 {username} 不存在")
                         return None
                     else:
-                        logger.warning(f"Yandere Github Stalker: GitHub API返回状态码 {response.status}")
+                        response_text = await response.text()
+                        logger.warning(f"Yandere Github Stalker: GitHub API返回状态码 {response.status}，响应：{response_text}")
                         return None
         except Exception as e:
             logger.error(f"Yandere Github Stalker: 获取用户 {username} 活动失败: {e}")
@@ -39,27 +64,18 @@ class GitHubAPI:
         """获取用户信息"""
         try:
             url = f"https://api.github.com/users/{username}"
+            logger.debug(f"Yandere Github Stalker: 正在获取用户 {username} 的信息")
             
             async with aiohttp.ClientSession() as session:
-                async with session.get(url, headers=self.headers, timeout=aiohttp.ClientTimeout(total=10)) as response:
+                async with session.get(url, headers=self.headers, timeout=aiohttp.ClientTimeout(total=self.timeout)) as response:
                     if response.status == 200:
-                        return await response.json()
+                        user_info = await response.json()
+                        logger.debug(f"Yandere Github Stalker: 成功获取用户 {username} 的信息")
+                        return user_info
                     else:
-                        logger.warning(f"Yandere Github Stalker: 获取用户信息失败，状态码: {response.status}")
+                        response_text = await response.text()
+                        logger.warning(f"Yandere Github Stalker: 获取用户信息失败，状态码: {response.status}，响应：{response_text}")
                         return None
         except Exception as e:
             logger.error(f"Yandere Github Stalker: 获取用户信息失败: {e}")
-            return None
-
-    async def download_avatar_base64(self, avatar_url: str) -> Optional[str]:
-        """下载头像并转换为base64"""
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(avatar_url, timeout=aiohttp.ClientTimeout(total=10)) as response:
-                    if response.status == 200:
-                        avatar_data = await response.read()
-                        import base64
-                        return base64.b64encode(avatar_data).decode('utf-8')
-        except Exception as e:
-            logger.error(f"Yandere Github Stalker: 下载头像失败: {e}")
-        return None 
+            return None 

@@ -44,7 +44,6 @@ class YandereTemplates:
         try:
             with open(schema_path, 'r', encoding='utf-8') as f:
                 schema = json.load(f)
-            
             # 从schema中提取所有事件的默认模板
             templates = {}
             for key, value in schema.items():
@@ -54,13 +53,7 @@ class YandereTemplates:
                         templates[event_type] = self._extract_default_templates(value['items'])
             return templates
         except Exception as e:
-            # 如果无法加载schema，使用内置的基本模板
-            return {
-                "PushEvent": {
-                    "template": "啊啊啊！{username}君又在偷偷提交代码了呢~ 这次推送了{commit_count}个改动...让我好好看看你都改了什么♥",
-                    "commit_message": "诶嘿嘿，{message}...{username}君的每一行代码我都要死死记住呢 ♥"
-                }
-            }
+            raise RuntimeError(f"[YandereTemplates] 加载schema失败：{e}，请检查_conf_schema.json配置文件！")
 
     def _convert_monitor_to_event_type(self, monitor_key: str) -> str:
         """
@@ -81,7 +74,9 @@ class YandereTemplates:
             'delete': 'DeleteEvent',
             'public': 'PublicEvent',
             'member': 'MemberEvent',
-            'commit_comment': 'CommitCommentEvent'
+            'commit_comment': 'CommitCommentEvent',
+            'issue_comment': 'IssueCommentEvent',  # 添加 issue_comment 映射
+            'pull_request_review': 'PullRequestReviewEvent'  # 添加 PR Review 映射
         }
         
         return event_type_mapping.get(event_type, event_type.capitalize() + 'Event')
@@ -117,13 +112,19 @@ class YandereTemplates:
         :param action: 事件动作（如果有）
         :return: 模板字符串
         """
-        template_data = self.templates.get(event_type, {})
-        
+        template_data = self.templates.get(event_type)
+        if not template_data:
+            raise ValueError(f"[YandereTemplates] {event_type} 模板缺失，请在schema中配置！")
         if isinstance(template_data, dict):
-            if action and action in template_data:
-                return template_data[action]
-            return template_data.get("template", f"啊...{event_type}...{action or ''}")
-        
+            if action:
+                if action in template_data:
+                    return template_data[action]
+                else:
+                    raise ValueError(f"[YandereTemplates] {event_type} 的 {action} 模板缺失，请在schema中配置！")
+            if "template" in template_data:
+                return template_data["template"]
+            else:
+                raise ValueError(f"[YandereTemplates] {event_type} 的template模板缺失，请在schema中配置！")
         return template_data
 
     def _format_push_event(self, event: GitHubEventData) -> str:
@@ -134,12 +135,12 @@ class YandereTemplates:
             "repo": event.repo,
             "commit_count": len(commits)
         }
-        
-        template_data = self.templates.get("PushEvent", {})
-        message = template_data.get("template", "啊啊啊！{username}君又在偷偷提交代码了呢~ 这次推送了{commit_count}个改动...让我好好看看你都改了什么♥").format(**template_vars)
-        
+        template_data = self.templates.get("PushEvent")
+        if not template_data or "template" not in template_data or "commit_message" not in template_data:
+            raise ValueError("[YandereTemplates] PushEvent模板缺失，请在schema中配置PushEvent的template和commit_message！")
+        message = template_data["template"].format(**template_vars)
         if commits:
-            commit_template = template_data.get("commit_message", "诶嘿嘿，{message}...{username}君的每一行代码我都要死死记住呢 ♥")
+            commit_template = template_data["commit_message"]
             for commit in commits[:3]:  # 最多显示3个提交
                 template_vars["message"] = commit["message"]
                 message += "\n" + commit_template.format(**template_vars)
@@ -163,7 +164,6 @@ class YandereTemplates:
             title = event.payload.get("issue", {}).get("title", "")
         else:
             title = event.payload.get("pull_request", {}).get("title", "")
-            
         return self.get_template(event.type, action).format(
             username=event.username,
             repo=event.repo,
@@ -171,14 +171,25 @@ class YandereTemplates:
         )
 
     def _format_comment_event(self, event: GitHubEventData) -> str:
-        """处理评论事件"""
+        """处理评论事件，兼容 CommitCommentEvent 和 IssueCommentEvent"""
         comment = event.payload.get("comment", {})
-        return self.get_template(event.type).format(
-            username=event.username,
-            repo=event.repo,
-            commit_id=comment.get("commit_id", "")[:7],
-            comment=comment.get("body", "")
-        )
+        # 判断是否为 IssueCommentEvent
+        if event.type == "IssueCommentEvent":
+            issue_title = event.payload.get("issue", {}).get("title", "")
+            return self.get_template(event.type).format(
+                username=event.username,
+                repo=event.repo,
+                issue_title=issue_title,
+                comment=comment.get("body", "")
+            )
+        else:
+            # CommitCommentEvent
+            return self.get_template(event.type).format(
+                username=event.username,
+                repo=event.repo,
+                commit_id=comment.get("commit_id", "")[:7],
+                comment=comment.get("body", "")
+            )
 
     def _format_member_event(self, event: GitHubEventData) -> str:
         """处理成员事件"""
@@ -193,6 +204,27 @@ class YandereTemplates:
         return self.get_template(event.type).format(
             username=event.username,
             repo=event.repo
+        )
+
+    def _format_pr_review_event(self, event: GitHubEventData) -> str:
+        """处理PR Review事件"""
+        review_state = event.payload.get("review", {}).get("state", "").lower()
+        title = event.payload.get("pull_request", {}).get("title", "")
+        
+        # 将review状态映射为更友好的描述
+        state_mapping = {
+            "approved": "同意了",
+            "changes_requested": "要求修改",
+            "commented": "评论了",
+            "dismissed": "忽略了",
+            "pending": "正在审查"
+        }
+        state = state_mapping.get(review_state, review_state)
+        
+        return self.get_template("PullRequestReviewEvent", "review").format(
+            username=event.username,
+            title=title,
+            state=state
         )
 
     def format_event_message(self, event: dict) -> str:
@@ -213,7 +245,10 @@ class YandereTemplates:
             case "IssuesEvent" | "PullRequestEvent":
                 return self._format_issue_or_pr_event(event_data)
                 
-            case "CommitCommentEvent":
+            case "PullRequestReviewEvent":
+                return self._format_pr_review_event(event_data)
+                
+            case "CommitCommentEvent" | "IssueCommentEvent":
                 return self._format_comment_event(event_data)
                 
             case "MemberEvent":
@@ -224,4 +259,4 @@ class YandereTemplates:
                 
             case _:
                 # 未知事件类型的默认处理
-                return self._format_simple_event(event_data) 
+                return self._format_simple_event(event_data)
