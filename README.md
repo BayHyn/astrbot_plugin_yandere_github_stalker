@@ -121,8 +121,13 @@
 
 ```
 ├── src/
+│   ├── config_manager.py            # 配置管理
+│   ├── event_processor.py           # 事件处理
 │   ├── github_api.py                # GitHub API 交互逻辑
+│   ├── github_event_data.py         # GitHub 事件数据结构
 │   ├── notification_renderer.py     # 通知渲染逻辑
+│   ├── notification_sender.py       # 通知发送逻辑
+│   ├── pushed_event_id_manager.py   # 推送事件ID管理
 │   ├── yandere_templates.py         # 病娇风格模板
 │   └── templates/
 │       └── notification.html        # HTML 通知模板
@@ -130,7 +135,11 @@
 ├── requirements.txt                 # 项目依赖
 ├── README.md                        # 项目说明文档
 ├── metadata.yaml                    # 插件元数据
-└── test_data.json                   # 测试数据
+├── test_data.json                   # 测试数据
+├── _conf_schema.json                # 配置schema
+├── demo.jpg                         # 示例图片
+├── __init__.py                      # 包初始化
+└── __pycache__/                     # Python缓存
 ```
 
 

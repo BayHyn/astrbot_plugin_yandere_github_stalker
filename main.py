@@ -19,7 +19,7 @@ from .src.config_manager import ConfigManager
 from .src.github_event_data import GitHubEventData
 
 
-@register("astrbot_plugin_yandere_github_stalker", "SXP-Simon", "Yandere Github Stalker Plugin", "1.0.0")
+@register("astrbot_plugin_yandere_github_stalker", "SXP-Simon", "Yandere Github Stalker Plugin", "1.1.0")
 class YandereGithubStalker(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         """初始化插件"""
