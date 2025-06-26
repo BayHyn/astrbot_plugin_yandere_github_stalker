@@ -8,6 +8,7 @@ from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.star import Context, Star, register
 from astrbot.api import logger, AstrBotConfig
 from astrbot.core.star.filter.permission import PermissionType
+from datetime import datetime
 
 from .src.github_api import GitHubAPI
 from .src.notification_renderer import NotificationRenderer
@@ -32,11 +33,11 @@ class YandereGithubStalker(Star):
         os.makedirs("data", exist_ok=True)
         self.pushed_event_ids_path = os.path.join(
             "data", "github_pushed_event_ids.json")
-        self.pushed_event_ids_manager = PushedEventIdManager(self.context)
+        self.pushed_event_ids_manager = PushedEventIdManager(context)
 
         # 初始化其他组件
         self.event_processor = EventProcessor(
-            event_limit=self.config_manager.get_event_limit(),
+            event_limit=self.config_manager.get_notification_event_limit(),
             pushed_event_ids_manager=self.pushed_event_ids_manager,
             config_manager=self.config_manager
         )
@@ -50,11 +51,12 @@ class YandereGithubStalker(Star):
         # 初始化状态
         self.is_monitoring = False
         self.monitoring_task = None
+        self.last_cleanup_time = datetime.now()  # 添加上次清理时间记录
 
         # 启动监控任务
-        asyncio.create_task(self.start_monitoring())
+        asyncio.create_task(self.start())
         logger.debug(
-            f"Yandere Github Stalker: 插件初始化完成，事件限制：{self.config_manager.get_event_limit()}")
+            f"Yandere Github Stalker: 插件初始化完成，事件限制：{self.config_manager.get_notification_event_limit()}")
 
     def _prepare_command(self, event: AstrMessageEvent):
         """准备命令执行环境"""
@@ -111,22 +113,44 @@ class YandereGithubStalker(Star):
 
     @yandere_group.command("status")
     async def github_status(self, event: AstrMessageEvent):
-        """显示当前视奸状态"""
-        self._prepare_command(event)
+        """获取监控状态"""
+        try:
+            self._prepare_command(event)
 
-        monitored_users = self.config_manager.get_monitored_users()
-        target_sessions = self.config_manager.get_target_sessions()
-        check_interval = self.config_manager.get_check_interval()
-        pushed_count = len(self.pushed_event_ids_manager)
+            # 获取基本信息
+            monitored_users = self.config_manager.get_monitored_users()
+            total_events = len(self.pushed_event_ids_manager)
+            is_monitoring = self.is_monitoring
 
-        msg = (
-            f"Yandere Github Stalker 插件状态 ♥\n"
-            f"视奸的用户们: {len(monitored_users)}位大可爱\n"
-            f"推送目标: {len(target_sessions)}个频道\n"
-            f"检查间隔: {check_interval}秒\n"
-            f"已经记录了{pushed_count}条动态呢...诶嘿嘿 ♥"
-        )
-        return event.plain_result(msg).stop_event()
+            # 构建状态信息
+            status_lines = [
+                "📊 Yandere Github Stalker 状态",
+                f"├── 监控状态：{'🟢 运行中' if is_monitoring else '🔴 已停止'}",
+                f"├── 总事件数：{total_events}",
+                "└── 监控列表："
+            ]
+
+            # 添加用户列表
+            if monitored_users:
+                for i, user in enumerate(monitored_users, 1):
+                    try:
+                        # 获取每个用户的事件数
+                        event_count = await self.pushed_event_ids_manager.get_pushed_event_count(user)
+                        prefix = "└──" if i == len(monitored_users) else "├──"
+                        status_lines.append(f"    {prefix} {user}（{event_count}条事件）")
+                    except Exception as e:
+                        logger.error(f"获取用户 {user} 事件数量失败: {e}")
+                        prefix = "└──" if i == len(monitored_users) else "├──"
+                        status_lines.append(f"    {prefix} {user}（获取事件数失败）")
+            else:
+                status_lines.append("    └── 暂无监控用户")
+
+            # 发送状态信息
+            return event.plain_result("\n".join(status_lines)).stop_event()
+
+        except Exception as e:
+            logger.error(f"获取监控状态失败: {e}")
+            return event.plain_result("❌ 获取监控状态失败，请查看日志").stop_event()
 
     @yandere_group.command("add")
     async def add_user(self, event: AstrMessageEvent, username: str):
@@ -144,8 +168,8 @@ class YandereGithubStalker(Star):
                 return event.plain_result(f"❌ 无法获取用户 {username} 的动态，请检查用户名是否正确").stop_event()
 
             monitored_users.append(username)
-            self.config_manager.update_config(
-                "monitored_users", monitored_users)
+            self.config_manager.update_config("monitored_users", monitored_users)
+            self.config_manager.config.save_config()  # 保存配置
             return event.plain_result(f"✅ 已将用户 {username} 加入视奸列表~").stop_event()
         except Exception as e:
             logger.error(f"Yandere Github Stalker: 添加用户失败: {e}")
@@ -162,8 +186,8 @@ class YandereGithubStalker(Star):
                 return event.plain_result(f"❌ 用户 {username} 不在视奸列表中哦~").stop_event()
 
             monitored_users.remove(username)
-            self.config_manager.update_config(
-                "monitored_users", monitored_users)
+            self.config_manager.update_config("monitored_users", monitored_users)
+            self.config_manager.config.save_config()  # 保存配置
             return event.plain_result(f"✅ 已将用户 {username} 从视奸列表中移除~").stop_event()
         except Exception as e:
             logger.error(f"Yandere Github Stalker: 移除用户失败: {e}")
@@ -183,8 +207,8 @@ class YandereGithubStalker(Star):
                 return event.plain_result("当前会话已启用通知").stop_event()
 
             target_sessions.append(session_id)
-            self.config_manager.update_config(
-                "target_sessions", target_sessions)
+            self.config_manager.update_config("target_sessions", target_sessions)
+            self.config_manager.config.save_config()  # 保存配置
             return event.plain_result("已启用当前会话的通知").stop_event()
         except Exception as e:
             logger.error(f"Yandere Github Stalker: 启用会话失败: {e}")
@@ -204,8 +228,8 @@ class YandereGithubStalker(Star):
                 return event.plain_result("当前会话未启用通知").stop_event()
 
             target_sessions.remove(session_id)
-            self.config_manager.update_config(
-                "target_sessions", target_sessions)
+            self.config_manager.update_config("target_sessions", target_sessions)
+            self.config_manager.config.save_config()  # 保存配置
             return event.plain_result("已禁用当前会话的通知").stop_event()
         except Exception as e:
             logger.error(f"Yandere Github Stalker: 禁用会话失败: {e}")
@@ -213,110 +237,98 @@ class YandereGithubStalker(Star):
 
     async def _monitoring_loop(self):
         """监控循环"""
+        logger.debug("Yandere Github Stalker: 开始监控循环")
+        self.is_monitoring = True
+
         while self.is_monitoring:
             try:
+                # 检查是否需要清理数据库（每24小时清理一次）
+                now = datetime.now()
+                if (now - self.last_cleanup_time).total_seconds() >= 24 * 3600:  # 24小时
+                    logger.debug("Yandere Github Stalker: 开始清理过期事件ID")
+                    retention_days = self.config_manager.get_event_retention_days()
+                    success = await self.pushed_event_ids_manager.cleanup_old_events(retention_days)
+                    if success:
+                        self.last_cleanup_time = now
+                        logger.debug("Yandere Github Stalker: 清理完成")
+                    else:
+                        logger.warning("Yandere Github Stalker: 清理失败，将在下次检查时重试")
+
                 # 获取配置
                 monitored_users = self.config_manager.get_monitored_users()
                 target_sessions = self.config_manager.get_target_sessions()
                 check_interval = self.config_manager.get_check_interval()
 
                 if not monitored_users:
-                    logger.warning("Yandere Github Stalker: 未配置监控用户")
+                    logger.debug("Yandere Github Stalker: 没有要监控的用户")
                     await asyncio.sleep(check_interval)
                     continue
 
                 if not target_sessions:
-                    logger.warning("Yandere Github Stalker: 未配置目标会话")
+                    logger.debug("Yandere Github Stalker: 没有推送目标会话")
                     await asyncio.sleep(check_interval)
                     continue
 
-                logger.debug(
-                    f"Yandere Github Stalker: 开始检查 {len(monitored_users)} 个用户的活动")
-
-                # 检查每个用户的活动
+                # 获取并处理每个用户的事件
                 for username in monitored_users:
                     try:
-                        # 获取用户活动
+                        # 获取用户事件
                         events = await self.github_api.get_user_events(username)
                         if not events:
-                            logger.debug(
-                                f"Yandere Github Stalker: 用户 {username} 没有新活动")
                             continue
 
                         # 处理事件
-                        new_events = await self.event_processor.process_events(events)
+                        new_events = await self.event_processor.process_events(events, username)
                         if not new_events:
-                            logger.debug(
-                                f"Yandere Github Stalker: 用户 {username} 没有需要推送的新事件")
                             continue
 
-                        logger.debug(
-                            f"Yandere Github Stalker: 用户 {username} 有 {len(new_events)} 条新事件需要推送")
-                        logger.debug(
-                            f"Yandere Github Stalker: 待推送事件类型：{[e.type for e in new_events]}")
-
-                        # 发送通知
-                        for idx, event in enumerate(new_events, 1):
-                            event_id = event.id
-                            event_type = event.type
-                            logger.debug(
-                                f"Yandere Github Stalker: 准备推送第 {idx}/{len(new_events)} 个事件 {event_id}，类型：{event_type}")
-
+                        # 推送新事件通知
+                        for event in new_events:
                             try:
+                                # 根据配置选择通知方式
                                 if self.config_manager.is_image_notification_enabled():
-                                    logger.debug(
-                                        f"Yandere Github Stalker: 尝试发送图片通知，事件ID：{event_id}")
                                     success = await self.notification_sender.send_image_notification(
-                                        username, event, target_sessions
-                                    )
+                                        username, event, target_sessions)
                                 else:
-                                    logger.debug(
-                                        f"Yandere Github Stalker: 尝试发送文本通知，事件ID：{event_id}")
                                     success = await self.notification_sender.send_text_notification(
-                                        username, event, target_sessions
-                                    )
+                                        username, event, target_sessions)
 
+                                # 标记事件状态
                                 if success:
-                                    # 成功发送通知，标记为已推送
-                                    await self.event_processor.mark_event_as_pushed(event_id)
-                                    logger.debug(
-                                        f"Yandere Github Stalker: 事件 {event_id} 推送成功并已标记为已推送")
+                                    if not await self.event_processor.mark_event_as_pushed(event.id, username, event.created_at):
+                                        logger.warning(
+                                            f"Yandere Github Stalker: 事件 {event.id} 标记失败，可能会在下次重复推送")
                                 else:
-                                    # 如果是因为模板缺失导致的失败，标记为已忽略
-                                    if "模板缺失" in str(success):
-                                        await self.event_processor.mark_event_as_ignored(event_id)
-                                        logger.warning(
-                                            f"Yandere Github Stalker: 事件 {event_id} 的模板缺失，已忽略")
-                                    else:
-                                        # 其他错误，记录错误但继续处理其他事件
-                                        logger.warning(
-                                            f"Yandere Github Stalker: 事件 {event_id} 推送失败，将在下次检查时重试")
-
+                                    # 如果发送失败，也标记为已处理，避免重复推送
+                                    await self.event_processor.mark_event_as_ignored(event.id, username, event.created_at)
                             except Exception as e:
                                 logger.error(
-                                    f"Yandere Github Stalker: 推送事件 {event_id} 时出错: {e}")
+                                    f"Yandere Github Stalker: 处理事件 {event.id} 时出错: {str(e)}")
                                 continue
-
                     except Exception as e:
                         logger.error(
-                            f"Yandere Github Stalker: 处理用户 {username} 的活动时出错: {e}")
+                            f"Yandere Github Stalker: 处理用户 {username} 的事件时出错: {str(e)}")
                         continue
 
                 # 等待下一次检查
-                logger.debug(
-                    f"Yandere Github Stalker: 本轮检查完成，等待 {check_interval} 秒后进行下一轮检查")
                 await asyncio.sleep(check_interval)
-
             except Exception as e:
-                logger.error(f"Yandere Github Stalker: 监控循环出错: {e}")
-                await asyncio.sleep(60)  # 出错后等待1分钟再继续
+                logger.error(f"Yandere Github Stalker: 监控循环出错: {str(e)}")
+                await asyncio.sleep(check_interval)  # 出错后也要等待，避免频繁重试
 
-    async def start_monitoring(self):
-        """启动监控"""
+    async def start(self) -> None:
+        """启动插件"""
         if not self.is_monitoring:
-            self.is_monitoring = True
+            # 启动时先清理一次数据库
+            logger.debug("Yandere Github Stalker: 插件启动，执行初始数据库清理")
+            retention_days = self.config_manager.get_event_retention_days()
+            success = await self.pushed_event_ids_manager.cleanup_old_events(retention_days)
+            if not success:
+                logger.warning("Yandere Github Stalker: 初始数据库清理失败，将在下次定时任务重试")
+            
+            # 启动监控任务
             self.monitoring_task = asyncio.create_task(self._monitoring_loop())
-            logger.info("Yandere Github Stalker: 监控任务已启动")
+            logger.debug("Yandere Github Stalker: 监控任务已启动")
 
     async def stop_monitoring(self):
         """停止监控"""

@@ -1,11 +1,8 @@
 """
 GitHub API related functionality
 """
-import os
-import json
 import aiohttp
-from typing import Optional, List, Dict
-from datetime import datetime
+from typing import Optional, List
 from astrbot.api import logger
 from .config_manager import ConfigManager
 from .github_event_data import GitHubEventData

@@ -23,6 +23,12 @@
         "hint": "每次检查时，每个用户最多推送多少条新事件。设置为0表示不限制",
         "default": 2
     },
+    "event_retention_days": {
+        "description": "事件ID保留天数",
+        "type": "int",
+        "hint": "数据库中保留多少天内的事件ID记录。超过这个天数的记录会被自动清理。建议设置为3-7天。",
+        "default": 1
+    },
     "github_token": {
         "description": "GitHub Personal Access Token",
         "type": "string",
@@ -278,25 +284,25 @@
     "notification_template": {
         "description": "通知开头模板",
         "type": "string",
-        "hint": "通知开头的模板文本。可用变量：{username} - 用户名",
+        "hint": "当有新事件时的通知开头文本",
         "default": "啊啊啊！{username}君又有新的动态了呢！♥\n\n"
     },
     "notification_remaining_template": {
         "description": "剩余动态提示模板",
         "type": "string",
-        "hint": "当有更多动态未显示时的提示模板。可用变量：{count} - 剩余数量, {username} - 用户名",
+        "hint": "当有更多事件未显示时的提示文本",
         "default": "还有{count}个动态...{username}君真是太活跃了呢 ♥"
     },
     "github_api_timeout": {
         "description": "GitHub API 请求超时时间",
         "type": "int",
-        "hint": "API请求的超时时间（秒），建议10-30秒之间",
+        "hint": "GitHub API 请求的超时时间（秒）",
         "default": 10
     },
     "github_api_user_agent": {
         "description": "GitHub API 请求的 User-Agent",
         "type": "string",
-        "hint": "API请求时使用的 User-Agent 标识",
+        "hint": "访问 GitHub API 时使用的 User-Agent 标识",
         "default": "Yandere-Github-Stalker/1.0.0"
     }
 }

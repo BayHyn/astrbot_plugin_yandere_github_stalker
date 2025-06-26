@@ -16,7 +16,7 @@ class NotificationRenderer:
         """初始化渲染器"""
         self.config_manager = config_manager
         self.yandere_templates = YandereTemplates(self.config_manager.get_custom_templates())
-        self.event_limit = self.config_manager.get_event_limit()
+        self.event_limit = self.config_manager.get_notification_event_limit()
 
         # 设置Jinja2环境
         template_dir = os.path.join(os.path.dirname(__file__), 'templates')
