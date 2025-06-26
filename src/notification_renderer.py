@@ -1,13 +1,14 @@
 """
 Notification rendering functionality
 """
-from typing import List
+from typing import Dict, Any
 from datetime import datetime
 import os
 import json
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from .yandere_templates import YandereTemplates
 from .config_manager import ConfigManager
+from .github_event_data import GitHubEventData
 
 
 class NotificationRenderer:
@@ -27,11 +28,11 @@ class NotificationRenderer:
             lstrip_blocks=True
         )
 
-    def get_event_description(self, event: dict) -> str:
+    def get_event_description(self, event: GitHubEventData) -> str:
         """根据事件类型生成描述"""
         return self.yandere_templates.format_event_message(event)
 
-    def render_html(self, username: str, event: dict) -> str:
+    def render_html(self, username: str, event: GitHubEventData) -> str:
         """
         渲染HTML内容
         :param username: 用户名
@@ -41,12 +42,12 @@ class NotificationRenderer:
         template = self.jinja_env.get_template('notification.html')
         # 处理事件数据
         created_at = datetime.strptime(
-            event['created_at'],
+            event.created_at,
             "%Y-%m-%dT%H:%M:%SZ"
         ).strftime("%Y-%m-%d %H:%M:%S")
         processed_event = {
-            'type': event['type'],
-            'repo_name': event['repo']['name'],
+            'type': event.type,
+            'repo_name': event.repo['name'],
             'description': self.get_event_description(event),
             'created_at': created_at
         }
@@ -56,7 +57,7 @@ class NotificationRenderer:
             events=[processed_event]  # 保持模板兼容性
         )
 
-    def create_text_notification(self, username: str, event: dict) -> str:
+    def create_text_notification(self, username: str, event: GitHubEventData) -> str:
         """创建文本通知内容（单个事件）"""
         yandere = self.yandere_templates
         # 从schema加载默认模板

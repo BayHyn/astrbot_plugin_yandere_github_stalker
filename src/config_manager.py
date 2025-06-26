@@ -4,6 +4,7 @@
 from typing import Any, List, Dict
 from astrbot.api import AstrBotConfig
 
+
 class ConfigManager:
     # 事件类型映射
     EVENT_TYPE_MAPPING = {
@@ -43,6 +44,14 @@ class ConfigManager:
         """获取检查间隔时间"""
         return self.config.get("check_interval", 300)
 
+    def get_github_api_timeout(self) -> int:
+        """获取GitHub API超时时间"""
+        return self.config.get("github_api_timeout", 10)
+
+    def get_github_api_user_agent(self) -> str:
+        """获取GitHub API User-Agent"""
+        return self.config.get("github_api_user_agent", "Yandere-Github-Stalker/1.0.0")
+
     def get_github_token(self) -> str:
         """获取GitHub Token"""
         return self.config.get("github_token", "")
@@ -60,8 +69,10 @@ class ConfigManager:
         custom_templates = {}
         for key, value in self.config.items():
             if key.startswith('monitor_') and isinstance(value, dict) and value.get('enabled'):
-                event_type = self._convert_monitor_to_event_type(key[8:])  # 移除 "monitor_" 前缀
-                custom_templates[event_type] = {k: v for k, v in value.items() if k != 'enabled'}
+                event_type = self._convert_monitor_to_event_type(
+                    key[8:])  # 移除 "monitor_" 前缀
+                custom_templates[event_type] = {
+                    k: v for k, v in value.items() if k != 'enabled'}
         return custom_templates
 
     def _convert_monitor_to_event_type(self, event_type: str) -> str:
@@ -69,4 +80,4 @@ class ConfigManager:
         将monitor_配置键转换为事件类型
         例如: monitor_push -> PushEvent
         """
-        return self.EVENT_TYPE_MAPPING.get(event_type, event_type.capitalize() + 'Event') 
+        return self.EVENT_TYPE_MAPPING.get(event_type, event_type.capitalize() + 'Event')
