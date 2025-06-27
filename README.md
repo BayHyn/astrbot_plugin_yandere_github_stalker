@@ -1,17 +1,18 @@
+<div align="center">
 # Yandere Github Stalker Plugin - 病娇版
 
 [![Plugin Version](https://img.shields.io/badge/Latest_Version-1.1.0-blue.svg?style=for-the-badge&color=76bad9)](https://github.com/SXP-Simon/astrbot_plugin_yandere_github_stalker)
 [![AstrBot](https://img.shields.io/badge/AstrBot-Plugin-ff69b4?style=for-the-badge)](https://github.com/AstrBotDevs/AstrBot)
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-AGPL3.0-green.svg?style=for-the-badge)](LICENSE)
 
 _✨ 用于监控 GitHub 用户活动的 AstrBot 插件，采用病娇风格的通知方式。它可以实时追踪指定用户的 GitHub 活动，并通过图片或文本的形式发送通知。 ✨_
 
-<div align="center">
-        <img src="https://count.getloli.com/@astrbot_plugin_yandere_github_stalker?name=astrbot_plugin_yandere_github_stalker&theme=booru-jaypee&padding=6&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" alt="count" />
+<img src="https://count.getloli.com/@astrbot_plugin_yandere_github_stalker?name=astrbot_plugin_yandere_github_stalker&theme=booru-jaypee&padding=6&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" alt="count" />
     </div>
 
+---
 
-## 功能特点
+## ✨ 功能特点
 
 - 实时监控多个 GitHub 用户的活动
 - 病娇风格的活动通知
@@ -22,7 +23,7 @@ _✨ 用于监控 GitHub 用户活动的 AstrBot 插件，采用病娇风格的�
 - 支持 GitHub API Token 以提高 API 访问限制
 
 
-## 配置
+## ⚙️ 配置
 
 在 AstrBot 的配置文件中添加以下配置（示例）：
 
@@ -46,7 +47,7 @@ _✨ 用于监控 GitHub 用户活动的 AstrBot 插件，采用病娇风格的�
 }
 ```
 
-### 配置说明
+### 📝 配置说明
 
 1. `monitored_users`: 要监控的GitHub用户名列表
 2. `target_sessions`: 接收通知的会话ID列表（格式：`平台:ID:类型`）
@@ -57,7 +58,7 @@ _✨ 用于监控 GitHub 用户活动的 AstrBot 插件，采用病娇风格的�
    - `enabled`: 是否启用该类事件监控
    - 其他字段为该事件类型的模板配置
 
-### 支持的事件类型
+### 📝 支持的事件类型
 
 - `monitor_push`: 推送事件
 - `monitor_issues`: Issue事件
@@ -70,7 +71,7 @@ _✨ 用于监控 GitHub 用户活动的 AstrBot 插件，采用病娇风格的�
 - `monitor_member`: 成员变动事件
 - `monitor_commit_comment`: 提交评论事件
 
-### 模板变量
+### 📝 模板变量
 
 在自定义模板中可以使用以下变量：
 
@@ -90,7 +91,7 @@ _✨ 用于监控 GitHub 用户活动的 AstrBot 插件，采用病娇风格的�
   - `{title}`: Issue/PR的标题
   - `{action}`: 动作类型（opened/closed等）
 
-## 可用命令
+## ✨ 可用命令
 
 - **`yandere test`**: 测试 GitHub 活动通知图片生成。(以 test_data.json 为示例数据)
 - **`yandere status`**: 显示当前监控状态。
@@ -99,7 +100,7 @@ _✨ 用于监控 GitHub 用户活动的 AstrBot 插件，采用病娇风格的�
 - **`yandere enable`**: 启用当前会话的通知（需要管理员权限）。
 - **`yandere disable`**: 禁用当前会话的通知（需要管理员权限）。
 
-## 通知示例
+## ✨ 通知示例
 
 ### 文本通知
 ```
@@ -117,14 +118,14 @@ _✨ 用于监控 GitHub 用户活动的 AstrBot 插件，采用病娇风格的�
 - 示例：
 ![Soulter 动态](./demo.jpg)
 
-## 注意事项
+## ❗ 注意事项
 
 1. 建议配置 GitHub Token 以获得更高的 API 访问限制
 2. 合理设置检查间隔，避免触发 GitHub API 限制
 3. 会话ID格式必须为 `平台:ID:类型`，例如 `qq:123456:group`
 4. 自定义模板时请确保包含所有必要的变量占位符
 
-## 文件结构
+## 📂 文件结构
 
 项目的主要文件和目录结构如下：
 
@@ -152,7 +153,7 @@ _✨ 用于监控 GitHub 用户活动的 AstrBot 插件，采用病娇风格的�
 ```
 
 
-## 贡献 PR
+## 📜 贡献 PR
 
 欢迎为本项目贡献代码！
 
