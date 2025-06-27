@@ -1,4 +1,5 @@
 <div align="center">
+
 # Yandere Github Stalker Plugin - 病娇版
 
 [![Plugin Version](https://img.shields.io/badge/Latest_Version-1.1.0-blue.svg?style=for-the-badge&color=76bad9)](https://github.com/SXP-Simon/astrbot_plugin_yandere_github_stalker)
