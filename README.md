@@ -8,7 +8,7 @@
 
 _✨ 用于监控 GitHub 用户活动的 AstrBot 插件，采用病娇风格的通知方式。它可以实时追踪指定用户的 GitHub 活动，并通过图片或文本的形式发送通知。 ✨_
 
-<img src="https://count.getloli.com/@astrbot_plugin_yandere_github_stalker?name=astrbot_plugin_yandere_github_stalker&theme=booru-jaypee&padding=6&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" alt="count" />
+<img src="https://count.getloli.com/@yandere_github_stalker?name=yandere_github_stalker&theme=booru-jaypee&padding=6&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" alt="count" />
     </div>
 
 ---
