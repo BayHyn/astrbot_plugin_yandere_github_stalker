@@ -1,5 +1,5 @@
-name: astrbot_plugin_yandere_github_stalker # 这是你的插件的唯一识别名。
+name: yandere_github_stalker # 这是你的插件的唯一识别名。
 desc: “听说 GitHub 的服务器能存 1000 年数据？真好，足够我把你的每一次在线状态都腌制成标本。” ——为 Astrbot 定制的 Github 动态推送病娇视奸插件 # 插件简短描述
 version: v1.1.0 # 插件版本号。格式：v1.1.1 或者 v1.1
-author: SXP-Simon # 作者
+author: Hakimyu/SXP-Simon # 作者
 repo: https://github.com/SXP-Simon/astrbot_plugin_yandere_github_stalker # 插件的仓库地址
