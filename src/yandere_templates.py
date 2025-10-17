@@ -149,15 +149,38 @@ class YandereTemplates:
     def _format_issue_or_pr_event(self, event: GitHubEventData) -> str:
         """处理Issue和PR事件"""
         action = event.payload.get("action", "")
+        
+        # 基础变量
+        template_vars = {
+            "username": event.actor["login"],
+            "repo": event.repo["name"]
+        }
+        
+        # 获取标题
         if event.type == "IssuesEvent":
-            title = event.payload.get("issue", {}).get("title", "")
+            issue = event.payload.get("issue", {})
+            template_vars["title"] = issue.get("title", "")
+            
+            # labeled/unlabeled 需要 label 变量
+            if action in ["labeled", "unlabeled"]:
+                label = event.payload.get("label", {})
+                template_vars["label"] = label.get("name", "")
+            
+            # assigned/unassigned 需要 assignee 变量
+            if action == "assigned":
+                assignee = event.payload.get("assignee", {})
+                template_vars["assignee"] = assignee.get("login", "某人")
+            
+            # milestoned/demilestoned 需要 milestone 变量
+            if action in ["milestoned", "demilestoned"]:
+                milestone = event.payload.get("milestone", {})
+                template_vars["milestone"] = milestone.get("title", "")
         else:
-            title = event.payload.get("pull_request", {}).get("title", "")
-        return self.get_template(event.type, action).format(
-            username=event.actor["login"],
-            repo=event.repo["name"],
-            title=title
-        )
+            # PullRequestEvent
+            pr = event.payload.get("pull_request", {})
+            template_vars["title"] = pr.get("title", "")
+        
+        return self.get_template(event.type, action).format(**template_vars)
 
     def _format_comment_event(self, event: GitHubEventData) -> str:
         """处理评论事件，兼容 CommitCommentEvent 和 IssueCommentEvent"""

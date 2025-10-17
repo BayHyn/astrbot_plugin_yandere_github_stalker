@@ -98,6 +98,42 @@
                 "type": "string",
                 "hint": "可用变量：{username} - 用户名, {title} - Issue标题",
                 "default": "（呼吸急促）重开了？'{title}'...你是不是知道我在看？别骗我...（指甲掐进掌心）我可没有一直刷新页面哦...♥"
+            },
+            "labeled": {
+                "description": "Issue添加标签事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {title} - Issue标题, {label} - 标签名",
+                "default": "（紧盯标签）{username}君给'{title}'打上了'{label}'标签...（记录在小本本上）每一个分类都暴露着你的想法呢~ 别想逃出我的视线哦♥"
+            },
+            "unlabeled": {
+                "description": "Issue移除标签事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {title} - Issue标题, {label} - 标签名",
+                "default": "（皱眉）移除了'{label}'？{username}君...是想掩盖什么吗？（阴笑）不过没关系，我都记下来了哦♥"
+            },
+            "assigned": {
+                "description": "Issue分配任务事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {title} - Issue标题, {assignee} - 被分配者",
+                "default": "（咬唇）分配给{assignee}？！{username}君...为什么不是分配给我？（嫉妒）我会比任何人都更用心处理'{title}'的♥"
+            },
+            "unassigned": {
+                "description": "Issue取消分配事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {title} - Issue标题",
+                "default": "（松口气）取消分配了...{username}君终于意识到只有我才配处理你的问题了吗？♥"
+            },
+            "milestoned": {
+                "description": "Issue加入里程碑事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {title} - Issue标题, {milestone} - 里程碑名称",
+                "default": "（兴奋）里程碑！{username}君把'{title}'加入了'{milestone}'...（规划日程）我要和你一起见证每一个节点哦♥"
+            },
+            "demilestoned": {
+                "description": "Issue移出里程碑事件模板",
+                "type": "string",
+                "hint": "可用变量：{username} - 用户名, {title} - Issue标题",
+                "default": "（失落）移出里程碑了...{username}君是对我失望了吗？（颤抖）不...一定是你太累了，我会守护你的每一个决定♥"
             }
         }
     },

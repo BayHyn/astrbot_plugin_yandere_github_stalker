@@ -54,7 +54,7 @@ class GitHubAPI:
                             f"Yandere Github Stalker: GitHub API返回状态码 {response.status}，响应：{response_text}")
                         return None
         except Exception as e:
-            logger.error(f"Yandere Github Stalker: 获取用户 {username} 活动失败: {e}")
+            logger.error(f"Yandere Github Stalker: 获取用户 {username} 活动失败: {e}", exc_info=True)
             return None
 
     async def get_user_info(self, username: str) -> Optional[dict]:
